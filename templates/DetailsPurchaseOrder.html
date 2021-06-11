@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Modify Purchase Order</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/PurchaseOrderStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+  	
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">
+	  	<img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+	  </a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+	    <div class="navbar-nav">
+	      {% if current_user.is_authenticated %}
+	      <a class="nav-item nav-link active" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+	      <a class="nav-item nav-link" href="/InspectionsIndex">Inspections</a>
+	      <a class="nav-item nav-link" href="/logout">Log Out</a>
+	    {% endif %}
+	    {% if not current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/signup">Sign Up</a>
+	      <a class="nav-item nav-link" href="/login">Log In</a>
+	    {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container">
+		<div class="title-container">
+			<h1>Details Purchase Order</h1>
+		</div>
+
+		<div>
+			<a href="/PurchaseOrderIndex">Go back to List</a> 
+			<div style="width: 100%;" class="card" style="width: 30rem; margin-top: 30px;">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item"><B>Purchase Order: {{purchaseOrder.PurchaseOrder}}</B></li>
+					<li class="list-group-item"><B>Status: {{purchaseOrder.Status}}</B></li>
+					<li class="list-group-item"><B>Quantity: {{purchaseOrder.Quantity}}</B></li>
+					<li class="list-group-item"><B>Modified Date: {{purchaseOrder.ModifiedDate}}</B></li>
+					<li class="list-group-item"><B>Request Date: {{purchaseOrder.RequestDate}}</B></li>
+					<li class="list-group-item"><B>Start Date: {{purchaseOrder.StartDate}}</B></li>
+					<li class="list-group-item"><B>End Date: {{purchaseOrder.EndDate}}</B></li>
+					<li style="display: none;" class="list-group-item"><B>Id: {{purchaseOrder.Id}}</B></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

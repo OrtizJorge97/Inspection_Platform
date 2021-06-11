@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>View Inspection</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/PurchaseOrderStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+  	
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">
+	  	<img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+	  </a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+	    <div class="navbar-nav">
+	      {% if current_user.is_authenticated %}
+	      <a class="nav-item nav-link active" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+	      <a class="nav-item nav-link" href="/InspectionsIndex">Inspections</a>
+	      <a class="nav-item nav-link" href="/logout">Log Out</a>
+	    {% endif %}
+	    {% if not current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/signup">Sign Up</a>
+	      <a class="nav-item nav-link" href="/login">Log In</a>
+	    {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container">
+		<div style="margin-bottom: 0px;" class="title-container">
+			<h1>View Part Number: <B>{{inspection.PartNumber}}</B></h1>
+		</div>
+
+		<div>
+			<div class="row">
+			    <div class="col-lg-6">
+			    	<a href="/InspectionsIndex">Go back to List</a>
+					<div class="card" style="width: 30rem; margin-top: 30px;">
+					  <ul class="list-group list-group-flush">
+					    <li class="list-group-item"><B>Purchase Order: {{inspection.PurchaseOrder}}</B></li>
+					    <li class="list-group-item"><B>Modified Date: {{inspection.ModifiedDate}}</B></li>
+					    <li class="list-group-item"><B>Result: {{inspection.Result}}</B></li>
+					    <li class="list-group-item"><B>Inspected By: {{inspection.ResponsableName}}</B></li>
+					  </ul>
+					</div>
+				</div>
+				<div class="col-lg-6">
+				<form style="margin-top: 20px;">
+				  <div class="form-group">
+				    <label for="endDate">Comments</label>
+				    <textarea class="form-control" id="commentsArea" rows="7" disabled>{{inspection.Comments}}</textarea>
+				  </div>
+				</form> 
+
+				<!--table for showing data from excel!-->
+			</div>	
+			<div class="row" style="margin: auto; width: 100%;">
+				<div class="col-lg-12">
+					<div class="table-container">
+						<table id="inspectionTable" class="table table-hover">
+							<thead>
+					            <tr>
+					              <th scope="col">Dimension</th>
+					              <th scope="col">Units</th>
+					              <th scope="col">Inf Limit</th>
+					              <th scope="col">Sup Limit</th>
+					              <th scope="col">Part #1</th>
+					              <th scope="col">Part #2</th>
+								  <th scope="col">Part #3</th>
+								  <th scope="col">Part #4</th>
+								  <th scope="col">Part #5</th>
+								  <th scope="col">Part #6</th>
+					              <th scope="col">Ok</th>
+					              <th scope="col">Not Ok</th>
+					            </tr>
+				          	</thead>
+				          	<tbody>
+				          		<!--
+				          		<tr>
+					              <th scope="row">{{ inspection.PartNumber }}</th>
+					              <td>{{ inspection.PurchaseOrder }}</td>
+					              <td>{{ inspection.ModifiedDate }}</td>
+					              <td>{{ inspection.Result }}</td>
+					              <th scope="col">{{ inspection.ResponsableName }}</th>
+					              <td>
+					              	<div>
+					              		<a href="/ViewPartNumber?id={{inspection.Id}}">View</a>
+					              		<a href="/DownloadPartNumber/{{inspection.FileName}}">Download</a>
+					              		<a href="/DeletePartNumber?id={{inspection.Id}}">Delete</a>
+					              	</div>
+					          	  </td>
+					            </tr> -->
+				          	</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="display: none;" id="jsonDataContainer">
+			{{ inspectionToShow|tojson }}
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var table = document.getElementById("inspectionTable");
+		const jsonInspection = JSON.parse(document.getElementById("jsonDataContainer").innerHTML);
+
+		const dimension = jsonInspection.dimension;
+		const units = jsonInspection.units;
+		const inferiorLimit = jsonInspection.inferiorLimit;
+		const superiorLimit = jsonInspection.superiorLimit;
+		const measure1 = jsonInspection.measure1;
+		const measure2 = jsonInspection.measure2;
+		const measure3 = jsonInspection.measure3;
+		const measure4 = jsonInspection.measure4;
+		const measure5 = jsonInspection.measure5;
+		const measure6 = jsonInspection.measure6;
+		const ok = jsonInspection.ok;
+		const notOk = jsonInspection.notOk;
+
+		console.log(jsonInspection.dimension);
+
+		for (index = 0; index < dimension.length; index++) {
+    		var tr = document.createElement('tr');
+		    tr.innerHTML = "<td colspan=2><input type='text' name='parts[]' placeholder='part 1' class='form-control' > </td><td><input type='text' name='price[]' placeholder='price e.g 100' class='form-control' ></td>";
+
+		    tr.innerHTML = "<td>"+dimension[index]+"</td>"+"<td>"+units[index]+"</td>"+"<td>"+inferiorLimit[index]+"</td>"+"<td>"+superiorLimit[index]+"</td>"+"<td>"+measure1[index]+"</td>"+"<td>"+measure2[index]+"</td>"+"<td>"+measure3[index]+"</td>"+"<td>"+measure4[index]+"</td>"+"<td>"+measure5[index]+"</td>"+"<td>"+measure6[index]+"</td>"+"<td style='color: #05ab0b; font-weight: bold;'>"+ok[index]+"</td>"+"<td style='color: #9c0523; font-weight: bold;'>"+notOk[index]+"</td>";
+
+		     table.appendChild(tr);
+		}
+		/*
+    		var dimensionCell = row.insertCell(0);
+  			var unitCell = row.insertCell(1); 
+  			var infLimitCell = row.insertCell(2);
+  			var supLimitCell = row.insertCell(3);
+  			var part1Cell = row.insertCell(4);
+  			var part2Cell = row.insertCell(5);
+  			var part3Cell = row.insertCell(6);
+  			var part4Cell = row.insertCell(7);
+  			var part5Cell = row.insertCell(8);
+  			var part6Cell = row.insertCell(9);
+  			var okCell = row.insertCell(10);
+  			var notOkCell = row.insertCell(11);
+
+  			dimensionCell.innerHTML = dimension[index];
+  			unitCell.innerHTML =  units[index];
+  			infLimitCell.innerHTML = inferiorLimit[index];
+  			supLimitCell.innerHTML = superiorLimit[index];
+  			part1Cell.innerHTML = measure1[index];
+  			part2Cell.innerHTML = measure2[index];
+  			part3Cell.innerHTML = measure3[index];
+  			part4Cell.innerHTML = measure4[index];
+  			part5Cell.innerHTML = measure5[index];
+  			part6Cell.innerHTML = measure6[index];
+  			okCell.innerHTML = ok[index];
+  			notOkCell.innerHTML = notOk[index];
+  			*/
+	</script>
+
+</body>
+</html>
+

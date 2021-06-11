@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Upload a Part Number</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/AddNewPartNumberStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">
+		 <img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		 <div class="navbar-nav">
+		  {% if current_user.is_authenticated %}
+		    <a class="nav-item nav-link" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+		    <a class="nav-item nav-link active" href="/InspectionsIndex">Inspections</a>
+		    <a class="nav-item nav-link" href="/logout">Log Out</a>
+		  {% endif %}
+		  {% if not current_user.is_authenticated %}
+		    <a class="nav-item nav-link" href="/signup">Sign Up</a>
+		    <a class="nav-item nav-link" href="/login">Log In</a>
+		  {% endif %}
+		  </div>
+		</div>
+	</nav>
+
+	<div class="title-container">
+		<h1>Add a Part Number</h1>
+	</div>
+
+  	<div class="container">
+		<a href="/InspectionsIndex">Go back to List</a>
+		
+
+
+		<div class="row" style="margin-top: 15px;">
+			<div class="col-lg-6">
+				<form action="/HandleAddNewPartNumber" method="POST" enctype="multipart/form-data">
+					{% with messages = get_flashed_messages() %}
+					  {% if messages %}
+					  <div>
+						  <p style="color: red;">
+							  {{ messages[0] }}
+						  </p>
+					  </div>
+					  {% endif %}
+					  {% endwith %}
+		
+				<div class="form-group">
+					<label for="purchaseOrderInput">Select Purchase Order</label>
+					<select name="purchaseOrderInput" class="form-control" id="purchaseOrderInput" value="In Progress">
+						{% for purchaseOrder in purchaseOrders %}
+						{% if purchaseOrder.Status == "In Progress"%}
+						<option>{{purchaseOrder.PurchaseOrder}}</option>
+						{% endif %}
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="partNumberQuantity">Quantity</label>
+					<input name="partNumberQuantity" type="number" class="form-control" id="partNumberQuantity" placeholder="Enter Quantity of Part Number">
+				</div>
+				<div class="form-group">
+					<label for="partNumberFileInput">Click to Select a File</label>
+					<input name="partNumberFileInput" type="file" id="partNumberFileInput">
+					<p style="color: red;" class="help-block">Tip: Before click on submit make sure you have typed a Purchase Order</p>
+				</div>
+				<div style="text-align: center;">
+					<button style="width: 50%; margin-bottom: 25px;" type="submit" class="btn btn-primary">Submit</button>
+				</div>
+				</form>
+			</div>
+			<div class="col-lg-6">
+				<div class="title-container">
+					<h4>Part Number Registered</h4>
+				</div>
+				<table id="purchaseOrderTable" class="table table-hover">
+						<thead>
+							<tr>
+								<th scope="col">Inspection</th>
+								<th scope="col">Purchase Order</th>
+								<th scope="col">Quantity</th>
+							</tr>
+						</thead>
+						<tbody>
+							{%for inspection in inspections%}
+							<tr>
+								<th scope="row"><B>{{ inspection.PartNumber }}</B></th>
+								<th scope="row"><B>{{ inspection.PurchaseOrder }}</B></th>
+								<th scope="row"><B>{{ inspection.Quantity }}</B></th>
+							</tr>
+							{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		/*
+		{%for purchaseOrder in purchaseOrders%}
+			console.log(" {{purchaseOrder.StatusTime}} ");
+		{% endfor %}
+		*/
+		/*
+		var table = document.getElementById("purchaseOrderTable");
+		for(var i=0, row; row=table.rows[i]; i++)
+		{
+			statusTime = row.cells[2].innerHTML;
+			if(statusTime === "IN TIME")
+			{
+				row.style.color = "black";
+			}
+			else if(statusTime === "LATE")
+			{
+				row.style.color = "#c90438";
+			}
+		}
+		*/
+		/*
+			console.log("puto o k:" + row.cells[3].innerHTML);
+			for(var j=0, col; col=row.cells[j]; j++)
+			{
+
+			}*/
+
+	</script>
+
+</body>
+</html>

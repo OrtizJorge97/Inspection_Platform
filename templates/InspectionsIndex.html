@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Inspections List</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/InspectionsIndexStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+	<style>
+		.selected {
+            background-color: #a1a1a1;
+            color: #FFF;
+		}
+	  </style>
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">
+	  	<img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+	  </a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+	    <div class="navbar-nav">
+	      {% if current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+	      <a class="nav-item nav-link active" href="/InspectionsIndex">Inspections</a>
+	      <a class="nav-item nav-link" href="/logout">Log Out</a>
+	    {% endif %}
+	    {% if not current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/signup">Sign Up</a>
+	      <a class="nav-item nav-link" href="/login">Log In</a>
+	    {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container">
+		<div class="title-container">
+			<h1>Inspections List</h1>
+		</div>
+
+		{% if current_user.title == 'Administrator' %}
+		<p>
+		  <button id="navigateToNewPartNumber" type="button" class="btn btn-primary btn-lg">New</button>
+		</p>
+		{% endif %}
+
+		{% with messages = get_flashed_messages() %}
+	      {% if messages %}
+	          <div style="color: red;" class="notification is-danger">
+	              {{ messages[0] }}
+	          </div>
+	      {% endif %}
+	    {% endwith %}
+		
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="filter-container">
+					<form class="form-inline" action="/HandlePartNumberFilter" enctype="multipart/form-data">
+					  <div class="form-group">
+						<label class="label-purchase-order" for="filterInput">Purchase Order</label>
+						<input name="filterInput" type="text" class="form-control input-filter" value="{{ filterText }}" id="filterInput" placeholder="Enter purchase order">
+					  </div>
+					  <br>
+					  <button type="submit" class="btn btn-primary">Filter</button>
+					</form>
+				</div>
+			</div>
+			<div class="col-sm-6" style="text-align: center ;">
+				<button style="display: none;" type="button" class="btn btn-info operationButton">Modify</button>
+				<button style="display: none;" type="button" class="btn btn-secondary operationButton">Download</button>
+				<button id="btn-delete" style="display: none;" type="button" class="btn btn-danger operationButton">Delete</button>
+			</div>
+		</div>
+
+		<div class="table-container">
+			<table id="table" class="table">
+				<thead>
+		            <tr>
+					  <th style="display: none;" scope="col">Id</th>
+		              <th scope="col">Part Number</th>
+		              <th scope="col">Purchase Order</th>
+					  <th scope="col">Quantity</th>
+		              {% if current_user.title == 'Administrator' %}
+		              <th scope="col">Modified Date</th>
+		              <th scope="col">Result</th>
+		              <th>Responsable</th>
+		              <th scope="col">Options</th>
+		              {% endif %}
+		            </tr>
+	          	</thead>
+	          	<tbody>
+	          		{% for inspection in inspections %}
+		            <tr>
+					  <td style="display: none;">{{ inspection.Id }}</td>
+		              <td style="font-weight: bold;" scope="row">{{ inspection.PartNumber }}</td>
+		              <td>{{ inspection.PurchaseOrder }}</td>
+					  <td>{{ inspection.Quantity }}</td>
+		              {% if current_user.title == 'Administrator' %}
+		              <td>{{ inspection.ModifiedDate }}</td>
+		              <td>{{ inspection.Result }}</td>
+		              <td>{{ inspection.ResponsableName }}</td>
+		              <td>
+		              	<div>
+		              		<a href="/ViewPartNumber?id={{inspection.Id}}">View</a>
+		              		<a href="/DownloadPartNumber/{{inspection.FileName}}">Download</a>
+		              		<a href="/DeletePartNumber?id={{inspection.Id}}">Delete</a>
+		              	</div>
+		          	  </td>
+		          	  {% endif %}
+		            </tr>
+		            {% endfor %}
+	          </tbody>
+			</table>
+		</div>
+		
+		<div id="po-table">
+			{{ purchaseOrders|tojson }}
+		</div>
+		
+	</div>
+
+	<script type="text/javascript" src="{{ url_for('static', filename='custom/js/InspectionsIndexPage/NavigationButtons.js') }}"></script>
+	<script type="text/javascript">
+		//Filtering section
+		const jsonPurchaseOrder = JSON.parse(document.getElementById("po-table").innerHTML);
+		console.log(jsonPurchaseOrder);
+		console.log(jsonPurchaseOrder[1].StartDate);
+		
+	</script>
+	<script type="text/javascript">
+		var table = document.getElementById('table');
+        var selected = table.getElementsByClassName('selected');
+
+        table.onclick = highlight;
+      
+        function highlight(e) {
+            //console.log(selected[0]);
+            //if (selected[0]) {
+                //selected[0].className = '';
+            //}
+            console.log(e.target.tagName);
+            if(e.target.parentNode.className === "selected" && e.target.tagName === "TD")
+            {
+                e.target.parentNode.className = "";
+            }
+            else if(e.target.parentNode.className === "" && e.target.tagName === "TD")
+            {
+                e.target.parentNode.className = 'selected';
+            }
+			
+			var selectedElements = document.querySelectorAll('.selected');
+			var empty = 0
+			var isThereAnySelection = false;
+			for (var i = 0; i < selectedElements.length; ++i) {
+				if (selectedElements[i].value !== "") {
+					isThereAnySelection = true;
+					break;
+				}
+			}
+			if (isThereAnySelection) {
+				buttons = document.getElementsByClassName("operationButton");
+				for (var i = 0; i < buttons.length; ++i) {
+					button = buttons[i].style.display = "inline";
+				}
+			}
+			else {
+				buttons = document.getElementsByClassName("operationButton");
+				for (var i = 0; i < buttons.length; ++i) {
+					button = buttons[i].style.display = "none";
+				}			
+			}
+            //console.log(e.target.innerHTML);
+        }
+        
+        function fnselect() {
+            var element = document.querySelectorAll('.selected');
+            element.forEach(function (item, index) {
+                console.log(item.cells[0].innerHTML, index);
+            });
+            if(element[0] !== undefined){ //it must be selected
+            alert(element[0].children[0].firstChild.data);
+            }
+        }
+	</script>
+	<script type="text/javascript">
+		//Delete
+		var baseUrl = "http://192.168.0.237:5000/";
+		var deleteButton = document.getElementById("btn-delete");
+		deleteButton.onclick = deleteInspections
+
+		async function deleteInspections() {
+			var inspectionIds = document.querySelectorAll('.selected');
+			var idsArray = []
+			inspectionIds.forEach((item, index) => {
+				idsArray.push(item.cells[0].innerHTML);
+			});
+
+			var options = {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(idsArray)
+			}
+			//credentials: 'include',
+			await fetch(baseUrl + "/HandleDeletePartNumber", options)
+			.then(response => {console.log(respsonse.json())})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+
+
+		}
+
+	</script>
+	
+
+</body>
+</html>

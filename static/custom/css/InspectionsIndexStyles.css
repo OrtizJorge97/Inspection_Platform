@@ -1,0 +1,30 @@
+#moretech_logo{
+	width: 100px;
+}
+
+.title-container {
+	text-align: center;
+}
+
+.filter-container {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.label-purchase-order {
+	margin-right: 3px;
+}
+
+.input-filter {
+	margin-right: 3px;
+}
+
+#navigateToNewPartNumber {
+	width: 30%;
+}
+
+/*
+.btn-primary {
+	width: 200px;
+}*/
+

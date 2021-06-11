@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Purchase Order List</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/PurchaseOrderStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+  	
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">
+	  	<img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+	  </a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+	    <div class="navbar-nav">
+	    {% if current_user.is_authenticated %}
+	      <a class="nav-item nav-link active" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+	      <a class="nav-item nav-link" href="/InspectionsIndex">Inspections</a>
+	      <a class="nav-item nav-link" href="/logout">Log Out</a>
+	    {% endif %}
+	    {% if not current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/signup">Sign Up</a>
+	      <a class="nav-item nav-link" href="/login">Log In</a>
+	    {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container">
+
+	    <div class="row">
+		    <div class="col-lg-6">
+		        {% if current_user.title == 'Administrator' %}
+				<p>
+				  <button id="navigateToNewPurchaseOrder" type="button" class="btn btn-primary btn-lg">New</button>
+				</p>
+				<p>
+				  <button id="navigateToImportPurchaseOrder" type="button" class="btn btn-primary btn-lg">Import</button>
+				</p>
+				{% endif %}
+		    </div>
+		    
+		    <div class="col-lg-6"">
+		      <div class="card">
+				 <div style="text-align: center;" class="card-body">
+				    <B>Date: {{date}}</B>
+				 </div>
+			  </div>
+		    </div>
+	    </div>
+		
+		<div class="title-container">
+			<h1>Purchase Order List</h1>
+		</div>
+
+		{% if current_user.is_authenticated %}
+		<div class="card">
+		  <div class="card-header">
+		    Bienvenido!
+		  </div>
+		  <div class="card-body">
+		    <h5 class="card-title">Hola, Bienvenido {{current_user.name}}!</h5>
+		  </div>
+		</div>
+		{% endif %}
+
+		<div class="table-container">
+			<table id="purchaseOrderTable" class="table table-hover">
+				<thead>
+		            <tr>
+		              <th scope="col">Purchase Order</th>
+		              <th scope="col">Status</th>
+		              <th scope="col">Quantity</th>
+		              <th style="display: none;" scope="col">Status Time</th>
+		              {% if current_user.title == 'Administrator' %}
+		              <th scope="col">Modified Date</th>
+		              <th scope="col">End Date</th>
+		              <th scope="col">Options</th>
+		              
+		              {% endif %}
+		            </tr>
+	          	</thead>
+	          	<tbody>
+	          		{%for purchaseOrder in purchaseOrders%}
+		            <tr>
+		              <th scope="row">{{ purchaseOrder.PurchaseOrder }}</th>
+		              <th scope="row"><B>{{ purchaseOrder.Status }}</B></th>
+		              <th scope="row">{{ purchaseOrder.Quantity }}</th>
+		              <td style="display: none;" scope="col">{{purchaseOrder.StatusTime}}</td>
+		              {% if current_user.title == 'Administrator' %}
+		              <td>{{ purchaseOrder.ModifiedDate }}</td>
+		              <td><B>{{ purchaseOrder.EndDate }}</B></td>
+		              <td>
+		              	<div>
+		              		<a href="/DownloadPurchaseOrderFile/{{purchaseOrder.PurchaseOrder}}">Download</a>
+		              		<a href="/ModifyPurchaseOrder?id={{purchaseOrder.Id}}">Modify</a>
+		              		<a href="/DetailsPurchaseOrder?id={{purchaseOrder.Id}}">Details</a>
+		              		<a href="/DeletePurchaseOrder?id={{purchaseOrder.Id}}">Delete</a>
+		              	</div>
+		          	  </td>
+		          	 {% endif %}
+		            </tr>
+		            {% endfor %}
+	          </tbody>
+			</table>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="{{ url_for('static', filename='custom/js/PurchaseOrderIndexPage/NavigationButtons.js') }}"></script>
+
+	<script type="text/javascript">
+		var table = document.getElementById("purchaseOrderTable");
+		for(var i=0, row; row=table.rows[i]; i++)
+		{
+			statusTime = row.cells[3].innerHTML;
+			if(statusTime === "IN TIME")
+			{
+				row.style.color = "black";
+			}
+			else if(statusTime === "LATE")
+			{
+				row.style.color = "#c90438";
+			}
+			/*
+			console.log("puto o k:" + row.cells[3].innerHTML);
+			for(var j=0, col; col=row.cells[j]; j++)
+			{
+
+			}*/
+		}
+	</script>
+
+</body>
+</html>

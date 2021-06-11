@@ -1,0 +1,19 @@
+#moretech_logo{
+	width: 100px;
+}
+
+.container {
+	padding: 10px;
+}
+
+#navigateToNewPurchaseOrder, #navigateToImportPurchaseOrder {
+	width: 100%;
+}
+
+.title-container > h1 {
+	text-align: center;
+}
+
+.card-body { 
+	font-size: 20px;
+}

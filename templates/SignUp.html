@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sign Up</title>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='custom/css/PurchaseOrderStyles.css') }}"/>
+  	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
+  	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  	<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+  	
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="#">
+	  	<img id="moretech_logo" src="{{ url_for('static', filename='resources/moretech_logo.png') }}">
+	  </a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+	    <div class="navbar-nav">
+	    {% if current_user.is_authenticated %}
+	      <a class="nav-item nav-link active" href="/PurchaseOrderIndex">Purchase Order <span class="sr-only">(current)</span></a>
+	      <a class="nav-item nav-link" href="/InspectionsIndex">Inspections</a>
+	      <a class="nav-item nav-link" href="/logout">Log Out</a>
+	    {% endif %}
+	    {% if not current_user.is_authenticated %}
+	      <a class="nav-item nav-link" href="/signup">Sign Up</a>
+	      <a class="nav-item nav-link" href="/login">Log In</a>
+	    {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	<div class="container">
+		<div class="title-container">
+			<h1>Sign Up</h1>
+		</div>
+
+		
+
+		<form action="/signup" method="POST">
+		  <div class="form-group">
+		    <label for="inputEmail">Email address</label>
+		    <input name="email" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+		    <small id="emailHelp" class="form-text text-muted">Type email.</small>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputName">Name</label>
+		    <input name="name" type="text" class="form-control" id="inputName" aria-describedby="nameHelp" placeholder="Enter name">
+		    <small id="nameHelp" class="form-text text-muted">Type name.</small>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputPassword">Password</label>
+		    <input name="password" type="password" class="form-control" id="inputPassword" placeholder="Password">
+		  </div>
+		  <div class="form-group">
+		    <label for="inputKey">KEY</label>
+		    <input name="key" type="password" class="form-control" id="inputKey" placeholder="Enter key" aria-describedby="keyHelp">
+		    <small id="keyHelp" class="form-text text-muted">Please contact your provider to obtain this key.</small>
+		  </div>
+		  {% with messages = get_flashed_messages() %}
+	      {% if messages %}
+	          <div style="color: red;" class="notification is-danger">
+	              {{ messages[0] }}
+	          </div>
+	      {% endif %}
+	      {% endwith %}
+		  <button type="submit" class="btn btn-primary">Sign Up</button>
+		</form>
+	</div>
+
+</body>
+</html>
